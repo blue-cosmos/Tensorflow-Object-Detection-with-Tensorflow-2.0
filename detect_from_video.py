@@ -3,6 +3,7 @@ import argparse
 import tensorflow as tf
 import cv2
 import pathlib
+import time
 
 from object_detection.utils import ops as utils_ops
 from object_detection.utils import label_map_util
@@ -60,7 +61,9 @@ def run_inference(model, category_index, cap):
             break
 
         # Actual detection.
+        s = time.time()
         output_dict = run_inference_for_single_image(model, image_np)
+        print(f'One frame: {time.time() - s}s')
         # Visualization of the results of a detection.
         vis_util.visualize_boxes_and_labels_on_image_array(
             image_np,
@@ -71,8 +74,8 @@ def run_inference(model, category_index, cap):
             instance_masks=output_dict.get('detection_masks_reframed', None),
             use_normalized_coordinates=True,
             line_thickness=8)
-        cv2.imshow('object_detection', cv2.resize(image_np, (800, 600)))
-        if cv2.waitKey(25) & 0xFF == ord('q'):
+        cv2.imshow('object_detection', image_np) #cv2.resize(image_np, (800, 600)))
+        if cv2.waitKey(1) & 0xFF == ord('q'):
             cap.release()
             cv2.destroyAllWindows()
             break
